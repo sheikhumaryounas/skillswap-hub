@@ -28,7 +28,7 @@ const DynamicBackground = () => {
   const path = location.pathname;
 
   let bgImage = '';
-  if (path === '/') bgImage = 'skillswap_hero_bg_1778317799492.png'; // Using the one from Home
+  if (path === '/') return null; // Home page handles its own background
   else if (path === '/dashboard') bgImage = 'dashboard-bg.png';
   else if (path === '/users') bgImage = 'explore-bg.png';
   else if (path === '/requests') bgImage = 'requests-bg.png';
