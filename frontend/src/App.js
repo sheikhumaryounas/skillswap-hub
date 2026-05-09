@@ -1,6 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import PageBackground from './components/common/PageBackground';
 
 // Pages
 import Home from './pages/Home';
@@ -22,11 +23,30 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
+const DynamicBackground = () => {
+  const location = useLocation();
+  const path = location.pathname;
+
+  let bgImage = '';
+  if (path === '/') bgImage = 'skillswap_hero_bg_1778317799492.png'; // Using the one from Home
+  else if (path === '/dashboard') bgImage = 'dashboard-bg.png';
+  else if (path === '/users') bgImage = 'explore-bg.png';
+  else if (path === '/requests') bgImage = 'requests-bg.png';
+  else if (path === '/sessions') bgImage = 'sessions-bg.png';
+  else if (path === '/notifications') bgImage = 'notifications-bg.png';
+  else if (path === '/profile') bgImage = 'profile-bg.png';
+  
+  if (!bgImage) return null;
+
+  return <PageBackground imageName={bgImage} />;
+};
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="app">
+          <DynamicBackground />
           <Navbar />
           <div className="main-content">
             <Routes>

@@ -131,7 +131,6 @@ const Profile = () => {
 
   return (
     <div className="profile-page animate-fade-in">
-      <PageBackground imageName="profile-bg.png" />
       <h1>My <span>Profile</span></h1>
 
       {message && <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>{message}</div>}

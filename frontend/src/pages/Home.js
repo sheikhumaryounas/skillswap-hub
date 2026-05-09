@@ -15,11 +15,6 @@ const Home = () => {
     <div className="home-page animate-fade-in">
       {/* Hero Section */}
       <section className="hero">
-        <div className="hero-bg-overlay">
-          <img src="/assets/images/hero-bg.png" alt="Hero Background" className="hero-bg-img" />
-          <div className="glass-overlay"></div>
-        </div>
-        
         <div className="container hero-content">
           <div className="badge-pill">🚀 The Future of Peer Learning</div>
           <h1>

@@ -128,7 +128,6 @@ const Sessions = () => {
 
   return (
     <div className="sessions-page animate-fade-in">
-      <PageBackground imageName="sessions-bg.png" />
       <div className="sessions-header">
         <div>
           <h1>My <span>Sessions</span></h1>

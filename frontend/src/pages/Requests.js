@@ -90,7 +90,6 @@ const Requests = () => {
 
   return (
     <div className="requests-page animate-fade-in">
-      <PageBackground imageName="requests-bg.png" />
       <div className="requests-header">
         <h1>My Requests</h1>
         <p>Manage your skill exchange requests</p>

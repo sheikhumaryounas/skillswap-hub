@@ -137,7 +137,6 @@ const Notifications = () => {
 
   return (
     <div className="notifications-page animate-fade-in">
-      <PageBackground imageName="notifications-bg.png" />
       <div className="notifications-header">
         <h1>Notifications</h1>
         <p>Stay updated with your skill exchange activities</p>
