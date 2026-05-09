@@ -283,7 +283,7 @@ nav {
   object-position: center center !important;
   opacity: 0.35 !important;
   filter: saturate(1.2) brightness(0.5) !important;
-  transform: none !important; /* Removed scale to debug alignment */
+  transform: scale(1.1) !important;
   z-index: -9999 !important;
   margin: 0 !important;
   padding: 0 !important;
