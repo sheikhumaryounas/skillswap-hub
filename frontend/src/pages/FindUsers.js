@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllUsers } from '../services/userService';
 import { createRequest } from '../services/requestService';
+import PageBackground from '../components/common/PageBackground';
 import '../assets/FindUsers.css';
 
 const FindUsers = () => {
@@ -60,6 +61,7 @@ const FindUsers = () => {
 
   return (
     <div className="find-users-page animate-fade-in">
+      <PageBackground imageName="explore-bg.png" />
       <header className="page-header">
         <h1>Discover <span>Skills</span></h1>
         <div className="search-bar">

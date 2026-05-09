@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { getMyRequests, acceptRequest, rejectRequest, deleteRequest } from '../services/requestService';
 import { useAuth } from '../context/AuthContext';
 import RequestCard from '../components/cards/RequestCard';
+import PageBackground from '../components/common/PageBackground';
 import '../assets/Requests.css';
 
 const Requests = () => {
@@ -88,7 +89,8 @@ const Requests = () => {
   }
 
   return (
-    <div className="requests-page">
+    <div className="requests-page animate-fade-in">
+      <PageBackground imageName="requests-bg.png" />
       <div className="requests-header">
         <h1>My Requests</h1>
         <p>Manage your skill exchange requests</p>

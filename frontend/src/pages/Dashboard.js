@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getMyRequests } from '../services/requestService';
 import { getMySessions } from '../services/sessionService';
+import PageBackground from '../components/common/PageBackground';
 import '../assets/Dashboard.css';
 
 const Dashboard = () => {
@@ -57,6 +58,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container animate-fade-in">
+      <PageBackground imageName="dashboard-bg.png" />
       <header className="dashboard-header">
         <div>
           <h1>Welcome back, <span>{user?.name || 'Explorer'}</span></h1>

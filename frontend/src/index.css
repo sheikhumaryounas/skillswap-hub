@@ -259,3 +259,35 @@ nav {
   .main-content { padding: 20px; }
 }
 
+/* Immersive Page Background System */
+.page-bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.page-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.15; /* Subtle for inner pages */
+  filter: saturate(1.2) brightness(0.4);
+  transform: scale(1.05);
+}
+
+.glass-overlay-deep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent, var(--bg-deep));
+  backdrop-filter: blur(60px); 
+  -webkit-backdrop-filter: blur(60px);
+}
+
+

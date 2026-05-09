@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { updateProfile, addOfferedSkill, addWantedSkill, removeOfferedSkill, removeWantedSkill, uploadProfilePicture } from '../services/userService';
 import { getProfile } from '../services/authService';
+import PageBackground from '../components/common/PageBackground';
 import '../assets/Profile.css';
 
 const Profile = () => {
@@ -130,6 +131,7 @@ const Profile = () => {
 
   return (
     <div className="profile-page animate-fade-in">
+      <PageBackground imageName="profile-bg.png" />
       <h1>My <span>Profile</span></h1>
 
       {message && <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>{message}</div>}

@@ -10,6 +10,7 @@ import { getMySessions, completeSession, cancelSession, createSession } from '..
 import { getMyRequests } from '../services/requestService';
 import { useAuth } from '../context/AuthContext';
 import SessionCard from '../components/cards/SessionCard';
+import PageBackground from '../components/common/PageBackground';
 import '../assets/Sessions.css';
 
 const Sessions = () => {
@@ -127,6 +128,7 @@ const Sessions = () => {
 
   return (
     <div className="sessions-page animate-fade-in">
+      <PageBackground imageName="sessions-bg.png" />
       <div className="sessions-header">
         <div>
           <h1>My <span>Sessions</span></h1>

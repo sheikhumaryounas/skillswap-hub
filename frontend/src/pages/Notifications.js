@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { getMyNotifications, markAsRead, markAllAsRead, deleteNotification, getUnreadCount } from '../services/reviewService';
 import { useAuth } from '../context/AuthContext';
+import PageBackground from '../components/common/PageBackground';
 import '../assets/Notifications.css';
 
 const Notifications = () => {
@@ -135,7 +136,8 @@ const Notifications = () => {
   }
 
   return (
-    <div className="notifications-page">
+    <div className="notifications-page animate-fade-in">
+      <PageBackground imageName="notifications-bg.png" />
       <div className="notifications-header">
         <h1>Notifications</h1>
         <p>Stay updated with your skill exchange activities</p>
