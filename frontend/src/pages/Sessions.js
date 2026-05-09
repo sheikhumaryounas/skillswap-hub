@@ -180,18 +180,22 @@ const Sessions = () => {
             <form onSubmit={handleCreateSessionSubmit}>
               <div className="input-group">
                 <label>Select Accepted Request</label>
-                <select 
-                  value={newSession.requestId}
-                  onChange={(e) => setNewSession({...newSession, requestId: e.target.value})}
-                  required
-                >
-                  <option value="">-- Choose a request --</option>
-                  {acceptedRequests.map(r => (
-                    <option key={r._id} value={r._id}>
-                      {r.sender.name} wants to learn {r.skillRequested}
-                    </option>
-                  ))}
-                </select>
+                {acceptedRequests.length === 0 ? (
+                  <p className="hint-text">You don't have any accepted requests to schedule. Please accept a request from the "Requests" page first.</p>
+                ) : (
+                  <select 
+                    value={newSession.requestId}
+                    onChange={(e) => setNewSession({...newSession, requestId: e.target.value})}
+                    required
+                  >
+                    <option value="">-- Choose a request --</option>
+                    {acceptedRequests.map(r => (
+                      <option key={r._id} value={r._id}>
+                        {r.sender.name} wants to learn {r.skillRequested}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
               <div className="form-row">
                 <div className="input-group">

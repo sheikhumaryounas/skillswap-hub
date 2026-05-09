@@ -14,12 +14,29 @@
   color: var(--text-muted);
   font-weight: 500;
   font-size: 0.95rem;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
   position: relative;
+  padding: 4px 0;
+}
+
+.nav-link:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px var(--primary-glow);
 }
 
 .nav-link:hover {
   color: var(--text-main);
+}
+
+.nav-link:hover:after {
+  width: 100%;
 }
 
 .nav-link.nav-icon {

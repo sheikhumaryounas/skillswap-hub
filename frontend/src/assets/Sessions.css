@@ -97,3 +97,10 @@
   gap: 12px;
   margin-top: 32px;
 }
+
+.hint-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 8px 0;
+}
