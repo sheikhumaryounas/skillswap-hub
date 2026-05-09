@@ -48,7 +48,7 @@ Built with the **MERN stack** and featuring a **state-of-the-art Glassmorphism U
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/skillswap-hub.git
+git clone https://github.com/sheikhumaryounas/skillswap-hub.git
 cd skillswap-hub
 ```
 
