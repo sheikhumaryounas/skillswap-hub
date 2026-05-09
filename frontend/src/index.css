@@ -261,34 +261,43 @@ nav {
 
 /* Immersive Page Background System */
 .page-bg-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: -9999 !important;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .page-bg-img {
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  opacity: 0.3; /* Increased for better visibility */
-  filter: saturate(1.1) brightness(0.5);
-  transform: scale(1.2); /* Zoomed to full screen */
-  transition: transform 0.5s ease;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  opacity: 0.35 !important;
+  filter: saturate(1.2) brightness(0.5) !important;
+  transform: scale(1.1) !important;
+  z-index: -9999 !important;
 }
 
 .glass-overlay-deep {
-  position: absolute;
+  position: fixed; /* Changed from absolute to fixed */
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, transparent, var(--bg-deep));
-  backdrop-filter: blur(60px); 
-  -webkit-backdrop-filter: blur(60px);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(3, 7, 18, 0.4); /* Solid subtle dark overlay instead of radial */
+  backdrop-filter: blur(40px); /* Slightly less blur for better texture visibility */
+  -webkit-backdrop-filter: blur(40px);
+  z-index: -1;
+  pointer-events: none;
 }
 
 
