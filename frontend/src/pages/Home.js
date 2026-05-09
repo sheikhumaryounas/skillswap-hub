@@ -6,72 +6,51 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import '../assets/Home.css';
 
 const Home = () => {
-  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   return (
     <div className="home-page animate-fade-in">
+      {/* Hero Section */}
       <section className="hero">
-        <div className="hero-content">
-          <div className="badge-pill">Community Driven Learning</div>
-          <h1>Master New Skills Through <span>Direct Exchange</span></h1>
+        <div className="hero-bg-overlay">
+          <img src="/assets/images/hero-bg.png" alt="Hero Background" className="hero-bg-img" />
+          <div className="glass-overlay"></div>
+        </div>
+        
+        <div className="container hero-content">
+          <div className="badge-pill">🚀 The Future of Peer Learning</div>
+          <h1>
+            Master New Skills <br />
+            <span>By Teaching Others</span>
+          </h1>
           <p className="description">
-            The industry-leading platform for students to swap knowledge. 
-            Teach what you love, learn what you need, and build a professional network 
-            that matters.
+            SkillSwap Hub is a premium marketplace where students trade knowledge. 
+            Teach what you master, learn what you love—all for free.
           </p>
           <div className="cta-group">
-            {isAuthenticated ? (
-              <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
-                Return to Dashboard
-              </button>
-            ) : (
-              <>
-                <button onClick={() => navigate('/register')} className="btn btn-primary">
-                  Start Swapping Now
-                </button>
-                <button onClick={() => navigate('/login')} className="btn btn-outline">
-                  Member Login
-                </button>
-              </>
-            )}
+            <button onClick={() => navigate('/register')} className="btn btn-primary btn-lg">
+              Get Started Free
+            </button>
+            <button onClick={() => navigate('/users')} className="btn btn-outline btn-lg">
+              Explore Skills
+            </button>
           </div>
+          
           <div className="hero-stats">
             <div className="stat-item">
-              <strong>12k+</strong>
-              <span>Active Learners</span>
+              <strong>1k+</strong>
+              <span>Active Students</span>
             </div>
             <div className="stat-item">
-              <strong>450+</strong>
-              <span>Skills Catalogued</span>
+              <strong>500+</strong>
+              <span>Skills Exchanged</span>
             </div>
             <div className="stat-item">
-              <strong>98%</strong>
-              <span>Success Rate</span>
-            </div>
-          </div>
-        </div>
-        <div className="hero-visual">
-          <div className="visual-card glass">
-            <div className="card-header-v">
-              <div className="dot red"></div>
-              <div className="dot yellow"></div>
-              <div className="dot green"></div>
-            </div>
-            <div className="card-body-v">
-              <div className="code-snippet">
-                <span className="keyword">const</span> <span className="func">learnSkill</span> = (mentor) ={">"} {"{"}
-                <br />
-                &nbsp;&nbsp;{/* Future of education */}
-                <br />
-                &nbsp;&nbsp;<span className="keyword">return</span> mentor.shareKnowledge();
-                <br />
-                {"}"};
-              </div>
+              <strong>4.9/5</strong>
+              <span>User Satisfaction</span>
             </div>
           </div>
         </div>

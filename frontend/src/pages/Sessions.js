@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMySessions, completeSession, cancelSession, createSession } from '../services/sessionService';
+import { getMyRequests } from '../services/requestService';
 import { useAuth } from '../context/AuthContext';
 import SessionCard from '../components/cards/SessionCard';
 import '../assets/Sessions.css';
@@ -15,13 +16,25 @@ const Sessions = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
+  const [acceptedRequests, setAcceptedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('all'); // 'all', 'upcoming', 'completed', 'cancelled'
+  const [activeTab, setActiveTab] = useState('all');
   const [actionLoading, setActionLoading] = useState(null);
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newSession, setNewSession] = useState({
+    requestId: '',
+    date: '',
+    time: '',
+    duration: 60,
+    location: 'Google Meet / Zoom'
+  });
 
   useEffect(() => {
     fetchSessions();
+    fetchAcceptedRequests();
   }, []);
 
   const fetchSessions = async () => {
@@ -37,15 +50,22 @@ const Sessions = () => {
     }
   };
 
-  const handleCompleteSession = async (sessionId) => {
-    if (!window.confirm('Mark this session as completed? This will allow you to leave a review.')) {
-      return;
+  const fetchAcceptedRequests = async () => {
+    try {
+      const data = await getMyRequests('received');
+      const accepted = data.filter(r => r.status === 'accepted');
+      setAcceptedRequests(accepted);
+    } catch (err) {
+      console.error('Error fetching requests:', err);
     }
+  };
 
+  const handleCompleteSession = async (sessionId) => {
+    if (!window.confirm('Mark this session as completed?')) return;
     setActionLoading(sessionId);
     try {
       await completeSession(sessionId);
-      await fetchSessions(); // Refresh the list
+      await fetchSessions();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to complete session');
     } finally {
@@ -54,14 +74,11 @@ const Sessions = () => {
   };
 
   const handleCancelSession = async (sessionId) => {
-    if (!window.confirm('Are you sure you want to cancel this session?')) {
-      return;
-    }
-
+    if (!window.confirm('Are you sure you want to cancel?')) return;
     setActionLoading(sessionId);
     try {
       await cancelSession(sessionId);
-      await fetchSessions(); // Refresh the list
+      await fetchSessions();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to cancel session');
     } finally {
@@ -69,98 +86,75 @@ const Sessions = () => {
     }
   };
 
-  const handleCreateSession = () => {
-    navigate('/requests'); // Redirect to requests to create sessions from accepted requests
+  const handleCreateSessionSubmit = async (e) => {
+    e.preventDefault();
+    setActionLoading('creating');
+    try {
+      await createSession(newSession);
+      setIsModalOpen(false);
+      setNewSession({ requestId: '', date: '', time: '', duration: 60, location: 'Online' });
+      await fetchSessions();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to schedule session');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   const filterSessions = () => {
     const now = new Date();
-
     switch (activeTab) {
-      case 'upcoming':
-        return sessions.filter(session =>
-          session.status === 'scheduled' && new Date(session.date) > now
-        );
-      case 'completed':
-        return sessions.filter(session => session.status === 'completed');
-      case 'cancelled':
-        return sessions.filter(session => session.status === 'cancelled');
-      default:
-        return sessions;
+      case 'upcoming': return sessions.filter(s => s.status === 'scheduled' && new Date(s.date) > now);
+      case 'completed': return sessions.filter(s => s.status === 'completed');
+      case 'cancelled': return sessions.filter(s => s.status === 'cancelled');
+      default: return sessions;
     }
   };
 
   const getTabCount = (tab) => {
     const now = new Date();
-
     switch (tab) {
-      case 'upcoming':
-        return sessions.filter(session =>
-          session.status === 'scheduled' && new Date(session.date) > now
-        ).length;
-      case 'completed':
-        return sessions.filter(session => session.status === 'completed').length;
-      case 'cancelled':
-        return sessions.filter(session => session.status === 'cancelled').length;
-      default:
-        return sessions.length;
+      case 'upcoming': return sessions.filter(s => s.status === 'scheduled' && new Date(s.date) > now).length;
+      case 'completed': return sessions.filter(s => s.status === 'completed').length;
+      case 'cancelled': return sessions.filter(s => s.status === 'cancelled').length;
+      default: return sessions.length;
     }
   };
 
-  if (loading) {
-    return <div className="loading">Loading sessions...</div>;
-  }
+  if (loading) return <div className="loading-container"><div className="spinner"></div></div>;
 
   const filteredSessions = filterSessions();
 
   return (
-    <div className="sessions-page">
+    <div className="sessions-page animate-fade-in">
       <div className="sessions-header">
-        <h1>My Sessions</h1>
-        <p>Manage your learning sessions</p>
-        <button onClick={handleCreateSession} className="btn btn-primary create-session-btn">
+        <div>
+          <h1>My <span>Sessions</span></h1>
+          <p>You have {getTabCount('upcoming')} upcoming knowledge swaps.</p>
+        </div>
+        <button onClick={() => setIsModalOpen(true)} className="btn btn-primary">
           Schedule New Session
         </button>
       </div>
 
-      <div className="tabs">
-        <button
-          className={`tab ${activeTab === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveTab('all')}
-        >
-          All ({getTabCount('all')})
-        </button>
-        <button
-          className={`tab ${activeTab === 'upcoming' ? 'active' : ''}`}
-          onClick={() => setActiveTab('upcoming')}
-        >
-          Upcoming ({getTabCount('upcoming')})
-        </button>
-        <button
-          className={`tab ${activeTab === 'completed' ? 'active' : ''}`}
-          onClick={() => setActiveTab('completed')}
-        >
-          Completed ({getTabCount('completed')})
-        </button>
-        <button
-          className={`tab ${activeTab === 'cancelled' ? 'active' : ''}`}
-          onClick={() => setActiveTab('cancelled')}
-        >
-          Cancelled ({getTabCount('cancelled')})
-        </button>
+      <div className="tabs glass">
+        {['all', 'upcoming', 'completed', 'cancelled'].map(tab => (
+          <button
+            key={tab}
+            className={`tab ${activeTab === tab ? 'active' : ''}`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)} ({getTabCount(tab)})
+          </button>
+        ))}
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
       <div className="sessions-content">
         {filteredSessions.length === 0 ? (
-          <div className="no-sessions">
-            <p>
-              {activeTab === 'all'
-                ? "You don't have any sessions yet. Accept a request to get started!"
-                : `No ${activeTab} sessions found.`
-              }
-            </p>
+          <div className="no-sessions card glass">
+            <p>No {activeTab !== 'all' ? activeTab : ''} sessions found.</p>
           </div>
         ) : (
           <div className="sessions-grid">
@@ -177,8 +171,69 @@ const Sessions = () => {
           </div>
         )}
       </div>
+
+      {/* Scheduling Modal */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="card modal-content glass">
+            <h2>Schedule Knowledge Swap</h2>
+            <form onSubmit={handleCreateSessionSubmit}>
+              <div className="input-group">
+                <label>Select Accepted Request</label>
+                <select 
+                  value={newSession.requestId}
+                  onChange={(e) => setNewSession({...newSession, requestId: e.target.value})}
+                  required
+                >
+                  <option value="">-- Choose a request --</option>
+                  {acceptedRequests.map(r => (
+                    <option key={r._id} value={r._id}>
+                      {r.sender.name} wants to learn {r.skillRequested}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-row">
+                <div className="input-group">
+                  <label>Date</label>
+                  <input 
+                    type="date" 
+                    value={newSession.date} 
+                    onChange={(e) => setNewSession({...newSession, date: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Time</label>
+                  <input 
+                    type="time" 
+                    value={newSession.time} 
+                    onChange={(e) => setNewSession({...newSession, time: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="input-group">
+                <label>Location / Link</label>
+                <input 
+                  type="text" 
+                  value={newSession.location} 
+                  onChange={(e) => setNewSession({...newSession, location: e.target.value})}
+                  placeholder="e.g. Google Meet Link"
+                />
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={actionLoading === 'creating'}>
+                  {actionLoading === 'creating' ? 'Scheduling...' : 'Confirm Session'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Sessions;
+export default Sessions;
