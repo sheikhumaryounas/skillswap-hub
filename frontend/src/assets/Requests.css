@@ -1,0 +1,86 @@
+.requests-page {
+  padding: 20px 0;
+}
+
+.requests-header {
+  margin-bottom: 40px;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 40px;
+  padding: 6px;
+  background: var(--glass);
+  border-radius: var(--radius-md);
+  width: fit-content;
+}
+
+.tab {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.requests-section h2 {
+  font-size: 1.25rem;
+  margin: 32px 0 20px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.request-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.request-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.status-pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.status-accepted { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.status-rejected { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+.card-body p {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.card-body .message {
+  font-style: italic;
+  color: var(--text-muted);
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-sm);
+}
+
+.card-footer {
+  display: flex;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--glass-border);
+}

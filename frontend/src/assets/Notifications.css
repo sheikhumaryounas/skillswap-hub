@@ -1,0 +1,16 @@
+/* Sessions.css */
+.sessions-page { padding: 20px 0; }
+.sessions-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+.sessions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
+
+/* Leaderboard.css */
+.leaderboard-page { padding: 20px 0; }
+.leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 32px; background: var(--bg-card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--glass-border); }
+.leaderboard-table th, .leaderboard-table td { padding: 16px 24px; text-align: left; border-bottom: 1px solid var(--glass-border); }
+.leaderboard-table th { background: var(--glass); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
+
+/* Notifications.css */
+.notifications-page { padding: 20px 0; }
+.notifications-list { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+.notification-item { background: var(--bg-card); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--glass-border); display: flex; align-items: flex-start; gap: 16px; transition: all 0.2s; }
+.notification-item.unread { border-left: 4px solid var(--primary); background: var(--glass); }

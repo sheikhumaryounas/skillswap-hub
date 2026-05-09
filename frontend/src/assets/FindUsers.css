@@ -1,0 +1,111 @@
+.find-users-page {
+  padding: 20px 0;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 20px;
+}
+
+.page-header h1 span {
+  color: var(--primary);
+}
+
+.search-bar {
+  flex: 1;
+  max-width: 500px;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.user-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar.large {
+  width: 56px;
+  height: 56px;
+  font-size: 1.5rem;
+}
+
+.institution {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.skills-section label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  max-width: 500px;
+  width: 100%;
+}
+
+.modal-content h2 {
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.message {
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.message.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.message.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .search-bar {
+    max-width: 100%;
+    width: 100%;
+  }
+}
