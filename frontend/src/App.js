@@ -36,6 +36,7 @@ const DynamicBackground = () => {
   else if (path === '/sessions') bgImage = 'sessions-bg.png';
   else if (path === '/notifications') bgImage = 'notifications-bg.png';
   else if (path === '/profile') bgImage = 'profile-bg.png';
+  else if (path === '/leaderboard') bgImage = 'leaderboard-bg.png';
   
   if (!bgImage) return null;
 
