@@ -16,6 +16,7 @@ import Leaderboard from './pages/Leaderboard';
 import Notifications from './pages/Notifications';
 // Components
 import Navbar from './components/common/Navbar';
+import Footer from './components/common/Footer';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -119,6 +120,7 @@ function App() {
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
+          <Footer />
         </div>
       </Router>
     </AuthProvider>
