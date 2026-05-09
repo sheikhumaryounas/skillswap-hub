@@ -89,9 +89,8 @@ npm start
 ---
 
 ## 📸 Screenshots
-
-> [!NOTE]
-> Add your screenshots here to show off the stunning Glassmorphism UI!
+<img width="931" height="430" alt="image" src="https://github.com/user-attachments/assets/eadeadfd-8a93-4484-9edf-6af3cc63e3c3" />
+<img width="944" height="406" alt="image" src="https://github.com/user-attachments/assets/c41d0f32-b5f0-4a89-bcb1-0f7966b0375c" />
 
 ---
 
