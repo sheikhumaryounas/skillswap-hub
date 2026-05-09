@@ -54,11 +54,15 @@
   font-weight: 600;
 }
 
-.avatar {
+.avatar, .nav-avatar {
   width: 32px;
   height: 32px;
-  background: var(--primary);
   border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar {
+  background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;

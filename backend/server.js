@@ -35,6 +35,9 @@ app.use(cors());
 // Parse JSON request bodies
 app.use(express.json());
 
+// Set static folder for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Parse URL-encoded request bodies
 app.use(express.urlencoded({ extended: true }));
 

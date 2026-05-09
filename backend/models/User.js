@@ -47,6 +47,11 @@ const userSchema = new mongoose.Schema({
     default: ''
   },
   
+  profilePicture: {
+    type: String,
+    default: 'default-avatar.png'
+  },
+  
   // Skills that the user can teach to others
   skillsOffered: [{
     title: {

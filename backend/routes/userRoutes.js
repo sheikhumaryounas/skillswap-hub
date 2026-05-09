@@ -14,15 +14,18 @@ const {
   removeWantedSkill,
   getAllUsers,
   getUserById,
-  getLeaderboard
+  getLeaderboard,
+  uploadProfilePicture
 } = require('../controllers/userController');
 const { protect } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 // All routes are protected (require authentication)
 router.use(protect);
 
 // Profile routes
 router.put('/profile', updateProfile);
+router.post('/profile-picture', upload.single('image'), uploadProfilePicture);
 
 // Skill management routes
 router.post('/skills/offered', addOfferedSkill);

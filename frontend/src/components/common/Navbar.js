@@ -62,7 +62,15 @@ const Navbar = () => {
             </Link>
             <div className="nav-user">
               <Link to="/profile" className="profile-link">
-                <div className="avatar">{user?.name?.charAt(0) || 'U'}</div>
+                {user?.profilePicture ? (
+                  <img 
+                    src={`http://localhost:5000${user.profilePicture}`} 
+                    alt="Avatar" 
+                    className="nav-avatar" 
+                  />
+                ) : (
+                  <div className="avatar">{user?.name?.charAt(0) || 'U'}</div>
+                )}
                 <span>{user?.name || 'Profile'}</span>
               </Link>
               <button onClick={handleLogout} className="btn-logout">Logout</button>

@@ -85,3 +85,17 @@ export const getLeaderboard = async () => {
   const response = await api.get('/users/leaderboard');
   return response.data;
 };
+
+/**
+ * Upload profile picture
+ * @param {FormData} formData - Multipart form data containing image
+ * @returns {Promise} - Updated profile picture path
+ */
+export const uploadProfilePicture = async (formData) => {
+  const response = await api.post('/users/profile-picture', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+  return response.data;
+};

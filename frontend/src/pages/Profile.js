@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { updateProfile, addOfferedSkill, addWantedSkill, removeOfferedSkill, removeWantedSkill } from '../services/userService';
+import { updateProfile, addOfferedSkill, addWantedSkill, removeOfferedSkill, removeWantedSkill, uploadProfilePicture } from '../services/userService';
 import { getProfile } from '../services/authService';
 import '../assets/Profile.css';
 
@@ -29,6 +29,7 @@ const Profile = () => {
   });
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -54,6 +55,28 @@ const Profile = () => {
       setMessage('Error updating profile: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleProfilePictureUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadData = new FormData();
+    uploadData.append('image', file);
+
+    setUploading(true);
+    setMessage('');
+
+    try {
+      await uploadProfilePicture(uploadData);
+      const updatedUser = await getProfile();
+      updateUser(updatedUser);
+      setMessage('Profile picture updated successfully!');
+    } catch (error) {
+      setMessage('Error uploading image: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -106,60 +129,76 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile-page">
-      <h1>My Profile</h1>
+    <div className="profile-page animate-fade-in">
+      <h1>My <span>Profile</span></h1>
 
-      {message && <div className="message">{message}</div>}
+      {message && <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>{message}</div>}
 
-      {/* Profile Information Section */}
-      <div className="profile-section">
-        <h2>Profile Information</h2>
-        <form onSubmit={handleProfileUpdate} className="profile-form">
-          <div className="form-group">
-            <label>Name</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
+      <div className="profile-grid">
+        {/* Profile Sidebar */}
+        <div className="profile-sidebar card glass">
+          <div className="profile-pic-container">
+            <img 
+              src={user?.profilePicture ? `http://localhost:5000${user.profilePicture}` : '/default-avatar.png'} 
+              alt="Profile" 
+              className="profile-pic-large"
             />
+            <label className="upload-label">
+              {uploading ? 'Uploading...' : 'Change Photo'}
+              <input type="file" onChange={handleProfilePictureUpload} hidden accept="image/*" />
+            </label>
           </div>
+          
+          <div className="user-reputation">
+            <div className="stat-box">
+              <strong>{user?.points || 0}</strong>
+              <span>Points</span>
+            </div>
+            <div className="stat-box">
+              <strong>⭐ {user?.rating?.toFixed(1) || '0.0'}</strong>
+              <span>Rating</span>
+            </div>
+          </div>
+        </div>
 
-          <div className="form-group">
-            <label>Bio</label>
-            <textarea
-              value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              rows="4"
-              placeholder="Tell others about yourself..."
-            />
-          </div>
+        {/* Profile Information Section */}
+        <div className="profile-main-content card glass">
+          <h2>Account Details</h2>
+          <form onSubmit={handleProfileUpdate} className="profile-form">
+            <div className="form-group">
+              <label>Name</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label>University</label>
-            <input
-              type="text"
-              value={formData.university}
-              onChange={(e) => setFormData({ ...formData, university: e.target.value })}
-              placeholder="Your university name"
-            />
-          </div>
+            <div className="form-group">
+              <label>Bio</label>
+              <textarea
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                rows="4"
+                placeholder="Tell others about yourself..."
+              />
+            </div>
 
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Updating...' : 'Update Profile'}
-          </button>
-        </form>
+            <div className="form-group">
+              <label>University</label>
+              <input
+                type="text"
+                value={formData.university}
+                onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+                placeholder="Your university name"
+              />
+            </div>
 
-        <div className="user-stats">
-          <div className="stat-item">
-            <strong>Points:</strong> {user?.points || 0}
-          </div>
-          <div className="stat-item">
-            <strong>Rating:</strong> ⭐ {user?.rating?.toFixed(1) || '0.0'}
-          </div>
-          <div className="stat-item">
-            <strong>Reviews:</strong> {user?.totalRatings || 0}
-          </div>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Updating...' : 'Update Profile'}
+            </button>
+          </form>
         </div>
       </div>
 
