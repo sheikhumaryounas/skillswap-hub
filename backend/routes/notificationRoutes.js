@@ -20,8 +20,8 @@ router.use(protect);
 
 router.get('/', getMyNotifications);
 router.get('/unread-count', getUnreadCount);
-router.put('/:id/read', markAsRead);
 router.put('/mark-all-read', markAllAsRead);
+router.put('/:id/read', markAsRead);
 router.delete('/:id', deleteNotification);
 
 module.exports = router;

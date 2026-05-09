@@ -10,6 +10,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/database');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
+const path = require('path');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');

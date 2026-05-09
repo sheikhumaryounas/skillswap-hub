@@ -133,6 +133,13 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
+/* Allow Home page to be truly full-screen */
+.app:has(.home-page) .main-content {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+
 /* Premium Buttons */
 .btn {
   display: inline-flex;
