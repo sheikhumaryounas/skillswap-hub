@@ -54,7 +54,7 @@
 }
 
 .hero-content h1 {
-  font-size: 5rem;
+  font-size: 5.5rem;
   line-height: 1.05;
   margin-bottom: 32px;
   text-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -68,11 +68,11 @@
 }
 
 .hero-content .description {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   color: var(--text-muted);
   margin-bottom: 48px;
-  max-width: 600px;
-  line-height: 1.5;
+  max-width: 700px;
+  line-height: 1.6;
 }
 
 .cta-group {
