@@ -99,3 +99,20 @@ export const uploadProfilePicture = async (formData) => {
   });
   return response.data;
 };
+/**
+ * Remove profile picture
+ * @returns {Promise} - API response
+ */
+export const removeProfilePicture = async () => {
+  const response = await api.delete('/users/profile-picture');
+  return response.data;
+};
+
+/**
+ * Delete account permanently
+ * @returns {Promise} - Success message
+ */
+export const deleteAccount = async () => {
+  const response = await api.delete('/users/profile');
+  return response.data;
+};

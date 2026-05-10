@@ -5,14 +5,17 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { updateProfile, addOfferedSkill, addWantedSkill, removeOfferedSkill, removeWantedSkill, uploadProfilePicture } from '../services/userService';
-import { getProfile } from '../services/authService';
+import { updateProfile, addOfferedSkill, addWantedSkill, removeOfferedSkill, removeWantedSkill, uploadProfilePicture, removeProfilePicture, deleteAccount } from '../services/userService';
+import { getProfile, logout } from '../services/authService';
 import PageBackground from '../components/common/PageBackground';
+import Modal from '../components/common/Modal';
 import '../assets/Profile.css';
 
 const Profile = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, clearUser } = useAuth();
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -28,6 +31,8 @@ const Profile = () => {
     title: '',
     level: 'Beginner',
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -41,6 +46,19 @@ const Profile = () => {
       });
     }
   }, [user]);
+
+  // Fetch latest profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const updatedUser = await getProfile();
+        updateUser(updatedUser);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+    fetchProfile();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -76,6 +94,24 @@ const Profile = () => {
       setMessage('Profile picture updated successfully!');
     } catch (error) {
       setMessage('Error uploading image: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveProfilePicture = async () => {
+    if (!window.confirm('Are you sure you want to remove your profile picture?')) return;
+
+    setUploading(true);
+    setMessage('');
+
+    try {
+      await removeProfilePicture();
+      const updatedUser = await getProfile();
+      updateUser(updatedUser);
+      setMessage('Profile picture removed!');
+    } catch (error) {
+      setMessage('Error removing image: ' + (error.response?.data?.message || error.message));
     } finally {
       setUploading(false);
     }
@@ -129,6 +165,21 @@ const Profile = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteAccount();
+      logout();
+      clearUser();
+      navigate('/');
+    } catch (error) {
+      setMessage('Error deleting account: ' + (error.response?.data?.message || error.message));
+      setShowDeleteModal(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="profile-page animate-fade-in">
       <h1>My <span>Profile</span></h1>
@@ -139,15 +190,35 @@ const Profile = () => {
         {/* Profile Sidebar */}
         <div className="profile-sidebar card glass">
           <div className="profile-pic-container">
-            <img 
-              src={user?.profilePicture ? `http://localhost:5000${user.profilePicture}` : '/default-avatar.png'} 
-              alt="Profile" 
-              className="profile-pic-large"
-            />
-            <label className="upload-label">
-              {uploading ? 'Uploading...' : 'Change Photo'}
-              <input type="file" onChange={handleProfilePictureUpload} hidden accept="image/*" />
-            </label>
+            <div className="profile-pic-large-wrapper">
+              {user?.profilePicture && user.profilePicture !== '/uploads/default-avatar.png' ? (
+                <img 
+                  src={`http://localhost:5000${user.profilePicture}`} 
+                  alt="Profile" 
+                  className="profile-pic-large"
+                  onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = `<div class="avatar-initial-styled" style="width:100%;height:100%;font-size:5rem;font-weight:900">${user.name.charAt(0)}</div>`; }}
+                />
+              ) : (
+                <div className="avatar-initial-styled" style={{ width: '100%', height: '100%', fontSize: '5rem', fontWeight: '900' }}>
+                  {user?.name?.charAt(0) || 'U'}
+                </div>
+              )}
+            </div>
+            <div className="profile-pic-actions">
+              <label className="upload-label">
+                {uploading ? 'Uploading...' : 'Change Photo'}
+                <input type="file" onChange={handleProfilePictureUpload} hidden accept="image/*" />
+              </label>
+              {user?.profilePicture && user.profilePicture !== 'default-avatar.png' && (
+                <button 
+                  className="btn-remove-pic" 
+                  onClick={handleRemoveProfilePicture}
+                  disabled={uploading}
+                >
+                  Remove Photo
+                </button>
+              )}
+            </div>
           </div>
           
           <div className="user-reputation">
@@ -160,6 +231,7 @@ const Profile = () => {
               <span>Rating</span>
             </div>
           </div>
+
         </div>
 
         {/* Profile Information Section */}
@@ -293,6 +365,30 @@ const Profile = () => {
           <button type="submit" className="btn btn-success">Add Skill</button>
         </form>
       </div>
+
+      <div className="danger-zone">
+        <h3>Danger Zone</h3>
+        <p>Once you delete your account, there is no going back. Please be certain.</p>
+        <button className="btn btn-delete-account" onClick={() => setShowDeleteModal(true)} type="button">
+          Delete Account Permanently
+        </button>
+      </div>
+
+      <Modal 
+        isOpen={showDeleteModal} 
+        onClose={() => !isDeleting && setShowDeleteModal(false)}
+        title="⚠️ Delete Account Permanently?"
+        actions={
+          <>
+            <button className="btn btn-outline" onClick={() => setShowDeleteModal(false)} disabled={isDeleting}>Cancel</button>
+            <button className="btn btn-danger" onClick={handleDeleteAccount} disabled={isDeleting}>
+              {isDeleting ? 'Deleting...' : 'Yes, Delete Forever'}
+            </button>
+          </>
+        }
+      >
+        <p>This action is <strong>irreversible</strong>. You will lose all your points, skills, sessions, and connections. Are you absolutely certain you want to proceed?</p>
+      </Modal>
     </div>
   );
 };

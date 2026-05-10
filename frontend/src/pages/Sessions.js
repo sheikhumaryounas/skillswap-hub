@@ -89,11 +89,17 @@ const Sessions = () => {
 
   const handleCreateSessionSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!newSession.requestId) {
+      alert('Please select an accepted request to schedule a session.');
+      return;
+    }
+
     setActionLoading('creating');
     try {
       await createSession(newSession);
       setIsModalOpen(false);
-      setNewSession({ requestId: '', date: '', time: '', duration: 60, location: 'Online' });
+      setNewSession({ requestId: '', date: '', time: '', duration: 60, location: 'Google Meet / Zoom' });
       await fetchSessions();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to schedule session');
@@ -229,7 +235,11 @@ const Sessions = () => {
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-outline" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={actionLoading === 'creating'}>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  disabled={actionLoading === 'creating' || acceptedRequests.length === 0}
+                >
                   {actionLoading === 'creating' ? 'Scheduling...' : 'Confirm Session'}
                 </button>
               </div>

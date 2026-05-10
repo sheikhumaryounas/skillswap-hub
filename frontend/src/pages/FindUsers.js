@@ -5,12 +5,16 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getAllUsers } from '../services/userService';
 import { createRequest } from '../services/requestService';
+import { useAuth } from '../context/AuthContext';
 import PageBackground from '../components/common/PageBackground';
 import '../assets/FindUsers.css';
 
 const FindUsers = () => {
+  const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,17 +41,22 @@ const FindUsers = () => {
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (user.skillsOffered && user.skillsOffered.some(s => s.title.toLowerCase().includes(searchTerm.toLowerCase())))
-  );
+  const filteredUsers = users.filter(user => {
+    const search = searchTerm.toLowerCase();
+    return (
+      user.name.toLowerCase().includes(search) ||
+      (user.university && user.university.toLowerCase().includes(search)) ||
+      (user.skillsOffered && user.skillsOffered.some(s => s.title.toLowerCase().includes(search))) ||
+      (user.skillsWanted && user.skillsWanted.some(s => s.title.toLowerCase().includes(search)))
+    );
+  });
 
   const handleRequest = async (e) => {
     e.preventDefault();
     setStatus({ type: 'loading', msg: 'Sending request...' });
     try {
       await createRequest({
-        receiver: selectedUser._id,
+        receiverId: selectedUser._id,
         ...requestData
       });
       setStatus({ type: 'success', msg: 'Request sent successfully!' });
@@ -74,53 +83,80 @@ const FindUsers = () => {
       </header>
 
       <div className="users-grid">
-        {filteredUsers.map(user => (
-          <div key={user._id} className="card user-card">
-            <div className="user-card-header">
-              <div className="avatar large">{user.name.charAt(0)}</div>
-              <div>
-                <h3>{user.name}</h3>
-                <p className="institution">{user.institution || 'Verified Student'}</p>
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map(user => (
+            <div key={user._id} className="card user-card glass">
+              <div className="user-card-header">
+                <div className="avatar-wrapper">
+                  {user.profilePicture && user.profilePicture !== '/uploads/default-avatar.png' ? (
+                    <img 
+                      src={`http://localhost:5000${user.profilePicture}`} 
+                      alt={user.name} 
+                      className="user-avatar-img"
+                      onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = `<div class="avatar-initial-styled" style="width:100%;height:100%">${user.name.charAt(0)}</div>`; }}
+                    />
+                  ) : (
+                    <div className="avatar-initial-styled">{user.name.charAt(0)}</div>
+                  )}
+                </div>
+                <div className="user-info">
+                  <h3>
+                    {user.name} 
+                    {user._id === currentUser?._id && <span className="self-badge">You</span>}
+                  </h3>
+                  <p className="institution">{user.university || 'SkillSwap Hub Student'}</p>
+                </div>
               </div>
-            </div>
-            
-            <div className="skills-section">
-              <label>Teaches:</label>
-              <div className="tag-container">
-                {user.skillsOffered && user.skillsOffered.length > 0 ? (
-                  user.skillsOffered.map((s, i) => <span key={i} className="tag teaching">{s.title}</span>)
-                ) : (
-                  <span className="no-skills">No skills listed</span>
-                )}
+              
+              <div className="skills-display">
+                <div className="skills-column">
+                  <label>Can Teach:</label>
+                  <div className="tag-container">
+                    {user.skillsOffered && user.skillsOffered.length > 0 ? (
+                      user.skillsOffered.map((s, i) => <span key={i} className="tag teaching">{s.title}</span>)
+                    ) : (
+                      <span className="no-skills">Open for requests</span>
+                    )}
+                  </div>
+                </div>
+  
+                <div className="skills-column">
+                  <label>Learning:</label>
+                  <div className="tag-container">
+                    {user.skillsWanted && user.skillsWanted.length > 0 ? (
+                      user.skillsWanted.map((s, i) => <span key={i} className="tag learning">{s.title}</span>)
+                    ) : (
+                      <span className="no-skills">Open for suggestions</span>
+                    )}
+                  </div>
+                </div>
               </div>
+  
+              <button 
+                className="btn btn-primary"
+                onClick={() => {
+                  if (user._id === currentUser?._id) {
+                    navigate('/profile');
+                    return;
+                  }
+                  setSelectedUser(user);
+                  setRequestData({
+                    skillOffered: user.skillsWanted?.[0]?.title || '',
+                    skillRequested: user.skillsOffered?.[0]?.title || '',
+                    message: `Hi ${user.name}, I noticed we have complementary skills. I'd love to swap skills with you!`
+                  });
+                }}
+              >
+                {user._id === currentUser?._id ? 'Your Profile' : 'Propose Swap'}
+              </button>
             </div>
-
-            <div className="skills-section">
-              <label>Wants to learn:</label>
-              <div className="tag-container">
-                {user.skillsWanted && user.skillsWanted.length > 0 ? (
-                  user.skillsWanted.map((s, i) => <span key={i} className="tag learning">{s.title}</span>)
-                ) : (
-                  <span className="no-skills">No skills listed</span>
-                )}
-              </div>
-            </div>
-
-            <button 
-              className="btn btn-primary btn-block"
-              onClick={() => {
-                setSelectedUser(user);
-                setRequestData({
-                  skillOffered: user.skillsWanted?.[0]?.title || '',
-                  skillRequested: user.skillsOffered?.[0]?.title || '',
-                  message: `Hi ${user.name}, I'd love to swap skills with you!`
-                });
-              }}
-            >
-              Propose Swap
-            </button>
+          ))
+        ) : (
+          <div className="no-results animate-fade-in">
+            <p>No students found matching "{searchTerm}"</p>
+            <span>Try searching for a different skill or name</span>
           </div>
-        ))}
+        )}
       </div>
 
       {selectedUser && (

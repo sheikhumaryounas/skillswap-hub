@@ -69,7 +69,13 @@ const Leaderboard = () => {
               {topThree[1] && (
                 <div className="podium-item second">
                   <div className="podium-rank">2</div>
-                  <div className="avatar-placeholder">{topThree[1].name.charAt(0)}</div>
+                  {topThree[1].profilePicture && topThree[1].profilePicture !== '/uploads/default-avatar.png' ? (
+                    <div className="podium-avatar-wrapper" style={{ width: '60px', height: '60px', marginBottom: '12px' }}>
+                      <img src={`http://localhost:5000${topThree[1].profilePicture}`} alt="" className="podium-img" />
+                    </div>
+                  ) : (
+                    <div className="avatar-initial-styled" style={{ width: '60px', height: '60px', fontSize: '1.5rem', marginBottom: '12px' }}>{topThree[1].name.charAt(0)}</div>
+                  )}
                   <div className="podium-info">
                     <h3>{topThree[1].name}</h3>
                     <p>{topThree[1].points} pts</p>
@@ -81,7 +87,13 @@ const Leaderboard = () => {
                 <div className="podium-item first">
                   <div className="crown">👑</div>
                   <div className="podium-rank">1</div>
-                  <div className="avatar-placeholder">{topThree[0].name.charAt(0)}</div>
+                  {topThree[0].profilePicture && topThree[0].profilePicture !== '/uploads/default-avatar.png' ? (
+                    <div className="podium-avatar-wrapper" style={{ width: '80px', height: '80px', marginBottom: '16px' }}>
+                      <img src={`http://localhost:5000${topThree[0].profilePicture}`} alt="" className="podium-img" />
+                    </div>
+                  ) : (
+                    <div className="avatar-initial-styled" style={{ width: '80px', height: '80px', fontSize: '2rem', marginBottom: '16px' }}>{topThree[0].name.charAt(0)}</div>
+                  )}
                   <div className="podium-info">
                     <h3>{topThree[0].name}</h3>
                     <p>{topThree[0].points} pts</p>
@@ -92,7 +104,13 @@ const Leaderboard = () => {
               {topThree[2] && (
                 <div className="podium-item third">
                   <div className="podium-rank">3</div>
-                  <div className="avatar-placeholder">{topThree[2].name.charAt(0)}</div>
+                  {topThree[2].profilePicture && topThree[2].profilePicture !== '/uploads/default-avatar.png' ? (
+                    <div className="podium-avatar-wrapper" style={{ width: '60px', height: '60px', marginBottom: '12px' }}>
+                      <img src={`http://localhost:5000${topThree[2].profilePicture}`} alt="" className="podium-img" />
+                    </div>
+                  ) : (
+                    <div className="avatar-initial-styled" style={{ width: '60px', height: '60px', fontSize: '1.5rem', marginBottom: '12px' }}>{topThree[2].name.charAt(0)}</div>
+                  )}
                   <div className="podium-info">
                     <h3>{topThree[2].name}</h3>
                     <p>{topThree[2].points} pts</p>
@@ -117,8 +135,17 @@ const Leaderboard = () => {
                 >
                   <div className="rank-num">#{index + 4}</div>
                   <div className="user-name-cell">
-                    <strong>{userData.name}</strong>
-                    {userData._id === user._id && <span className="you-label">YOU</span>}
+                    {userData.profilePicture && userData.profilePicture !== '/uploads/default-avatar.png' ? (
+                      <img src={`http://localhost:5000${userData.profilePicture}`} alt="" className="list-avatar" />
+                    ) : (
+                      <div className="avatar-initial-styled" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>
+                        {userData.name.charAt(0)}
+                      </div>
+                    )}
+                    <div>
+                      <strong>{userData.name}</strong>
+                      {userData._id === user._id && <span className="you-label">YOU</span>}
+                    </div>
                   </div>
                   <div className="uni-cell">{userData.university || 'N/A'}</div>
                   <div className="score-cell">{userData.points}</div>

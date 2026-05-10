@@ -6,6 +6,9 @@
  */
 
 const User = require('../models/User');
+const Request = require('../models/Request');
+const Session = require('../models/Session');
+const Notification = require('../models/Notification');
 
 /**
  * Update user profile
@@ -18,9 +21,9 @@ const updateProfile = async (req, res) => {
 
     if (user) {
       // Update fields if provided in request body
-      user.name = req.body.name || user.name;
-      user.bio = req.body.bio || user.bio;
-      user.university = req.body.university || user.university;
+      if (req.body.name !== undefined) user.name = req.body.name;
+      if (req.body.bio !== undefined) user.bio = req.body.bio;
+      if (req.body.university !== undefined) user.university = req.body.university;
 
       const updatedUser = await user.save();
 
@@ -52,6 +55,10 @@ const updateProfile = async (req, res) => {
 const addOfferedSkill = async (req, res) => {
   try {
     const { title, level, description } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: 'Please provide a skill title' });
+    }
 
     const user = await User.findById(req.user._id);
 
@@ -86,6 +93,10 @@ const addOfferedSkill = async (req, res) => {
 const addWantedSkill = async (req, res) => {
   try {
     const { title, level } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ message: 'Please provide a skill title' });
+    }
 
     const user = await User.findById(req.user._id);
 
@@ -172,7 +183,7 @@ const getAllUsers = async (req, res) => {
     const { search, skill } = req.query;
 
     // Build query object
-    let query = { _id: { $ne: req.user._id } }; // Exclude current user
+    let query = {}; // Include all users
 
     // Search by name or university
     if (search) {
@@ -226,7 +237,7 @@ const getLeaderboard = async (req, res) => {
   try {
     // Get top 10 users sorted by points
     const topUsers = await User.find()
-      .select('name university points rating totalRatings')
+      .select('name university points rating totalRatings profilePicture')
       .sort({ points: -1 })
       .limit(10);
 
@@ -263,14 +274,74 @@ const uploadProfilePicture = async (req, res) => {
   }
 };
 
+/**
+ * Remove profile picture (reset to default)
+ * Route: DELETE /api/users/profile-picture
+ * Access: Private
+ */
+const removeProfilePicture = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.profilePicture = '/uploads/default-avatar.png';
+      await user.save();
+      res.json({ 
+        message: 'Profile picture removed', 
+        profilePicture: user.profilePicture 
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * Delete user account permanently
+ * Route: DELETE /api/users/profile
+ * Access: Private
+ */
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Delete user's requests (where they are sender or receiver)
+    await Request.deleteMany({
+      $or: [{ sender: userId }, { receiver: userId }]
+    });
+
+    // Delete user's sessions (where they are teacher or learner)
+    await Session.deleteMany({
+      $or: [{ teacher: userId }, { learner: userId }]
+    });
+
+    // Delete user's notifications
+    await Notification.deleteMany({ recipient: userId });
+
+    // Delete the user
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'Account and all associated data deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   updateProfile,
   uploadProfilePicture,
+  removeProfilePicture,
   addOfferedSkill,
   addWantedSkill,
   removeOfferedSkill,
   removeWantedSkill,
   getAllUsers,
   getUserById,
-  getLeaderboard
+  getLeaderboard,
+  deleteAccount
 };

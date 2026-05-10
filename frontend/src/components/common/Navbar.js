@@ -62,14 +62,16 @@ const Navbar = () => {
             </Link>
             <div className="nav-user">
               <Link to="/profile" className="profile-link">
-                {user?.profilePicture ? (
+                {user?.profilePicture && user.profilePicture !== '/uploads/default-avatar.png' ? (
                   <img 
                     src={`http://localhost:5000${user.profilePicture}`} 
                     alt="Avatar" 
                     className="nav-avatar" 
                   />
                 ) : (
-                  <div className="avatar">{user?.name?.charAt(0) || 'U'}</div>
+                  <div className="avatar-initial-styled" style={{ width: '32px', height: '32px', fontSize: '0.9rem' }}>
+                    {user?.name?.charAt(0) || 'U'}
+                  </div>
                 )}
                 <span>{user?.name || 'Profile'}</span>
               </Link>

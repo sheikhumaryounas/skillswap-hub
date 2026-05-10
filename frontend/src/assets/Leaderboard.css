@@ -125,6 +125,37 @@
   margin-bottom: 8px;
 }
 
+.podium-avatar-wrapper {
+  position: relative;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+  flex-shrink: 0;
+}
+
+.podium-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #030712;
+}
+
+.user-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.list-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--glass-border);
+}
+
 .podium-info {
   width: 100%;
 }

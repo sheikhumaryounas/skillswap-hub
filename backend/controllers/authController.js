@@ -30,6 +30,12 @@ exports.registerUser = async (req, res) => {
       name: user.name,
       email: user.email,
       university: user.university,
+      bio: user.bio,
+      profilePicture: user.profilePicture,
+      skillsOffered: user.skillsOffered,
+      skillsWanted: user.skillsWanted,
+      points: user.points,
+      rating: user.rating,
       token: generateToken(user._id)
     });
   } catch (error) {
@@ -57,8 +63,40 @@ exports.loginUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      university: user.university,
+      bio: user.bio,
+      profilePicture: user.profilePicture,
+      skillsOffered: user.skillsOffered,
+      skillsWanted: user.skillsWanted,
+      points: user.points,
+      rating: user.rating,
       token: generateToken(user._id)
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET USER PROFILE
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        university: user.university,
+        bio: user.bio,
+        profilePicture: user.profilePicture,
+        skillsOffered: user.skillsOffered,
+        skillsWanted: user.skillsWanted,
+        points: user.points,
+        rating: user.rating
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

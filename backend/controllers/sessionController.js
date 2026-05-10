@@ -17,6 +17,10 @@ const User = require('../models/User');
 const createSession = async (req, res) => {
   try {
     const { requestId, date, time, duration, location, notes } = req.body;
+    
+    if (!requestId) {
+      return res.status(400).json({ message: 'Please select an accepted request' });
+    }
 
     // Find the request
     const request = await Request.findById(requestId);

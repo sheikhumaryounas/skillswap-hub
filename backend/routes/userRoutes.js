@@ -15,7 +15,9 @@ const {
   getAllUsers,
   getUserById,
   getLeaderboard,
-  uploadProfilePicture
+  uploadProfilePicture,
+  removeProfilePicture,
+  deleteAccount
 } = require('../controllers/userController');
 const { protect } = require('../middleware/auth');
 const upload = require('../middleware/upload');
@@ -25,7 +27,9 @@ router.use(protect);
 
 // Profile routes
 router.put('/profile', updateProfile);
+router.delete('/profile', deleteAccount);
 router.post('/profile-picture', upload.single('image'), uploadProfilePicture);
+router.delete('/profile-picture', removeProfilePicture);
 
 // Skill management routes
 router.post('/skills/offered', addOfferedSkill);
