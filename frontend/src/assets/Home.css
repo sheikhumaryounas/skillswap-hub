@@ -54,9 +54,9 @@
 }
 
 .hero-content h1 {
-  font-size: 5.5rem;
+  font-size: clamp(3rem, 7vw + 1rem, 5.5rem); /* Fluid typography for premium feel */
   line-height: 1.05;
-  margin-bottom: 32px;
+  margin-bottom: clamp(16px, 3vw, 32px);
   text-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 

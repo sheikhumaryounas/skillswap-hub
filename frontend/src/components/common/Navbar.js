@@ -64,7 +64,7 @@ const Navbar = () => {
               <Link to="/profile" className="profile-link">
                 {user?.profilePicture && user.profilePicture !== '/uploads/default-avatar.png' ? (
                   <img 
-                    src={`http://localhost:5000${user.profilePicture}`} 
+                    src={`${(process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000/api').replace('/api', '')}${user.profilePicture}`} 
                     alt="Avatar" 
                     className="nav-avatar" 
                   />
