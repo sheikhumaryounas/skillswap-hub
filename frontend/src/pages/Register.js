@@ -40,6 +40,13 @@ const Register = () => {
       return;
     }
 
+    // Validate password complexity
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError('Password must be at least 8 characters long and contain at least one uppercase letter and one special character');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -109,8 +116,8 @@ const Register = () => {
               value={password}
               onChange={handleChange}
               required
-              minLength="6"
-              placeholder="Enter password (min 6 characters)"
+              minLength="8"
+              placeholder="Min 8 chars, 1 uppercase, 1 special char"
             />
           </div>
 
@@ -123,7 +130,7 @@ const Register = () => {
               value={confirmPassword}
               onChange={handleChange}
               required
-              minLength="6"
+              minLength="8"
               placeholder="Confirm your password"
             />
           </div>
