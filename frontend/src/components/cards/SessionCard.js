@@ -8,7 +8,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const SessionCard = ({ session, currentUserId, onComplete, onCancel, actionLoading }) => {
+const SessionCard = ({ session, currentUserId, onComplete, onCancel, onLeaveReview, actionLoading }) => {
   const navigate = useNavigate();
 
   const isTeacher = session.teacher._id === currentUserId;
@@ -46,9 +46,6 @@ const SessionCard = ({ session, currentUserId, onComplete, onCancel, actionLoadi
     });
   };
 
-  const handleLeaveReview = () => {
-    navigate(`/reviews/create?sessionId=${session._id}`);
-  };
 
   return (
     <div className="card session-card">
@@ -94,7 +91,7 @@ const SessionCard = ({ session, currentUserId, onComplete, onCancel, actionLoadi
         )}
         {session.status === 'completed' && (
           <button
-            onClick={handleLeaveReview}
+            onClick={() => onLeaveReview(session)}
             className="btn btn-primary"
           >
             Leave Review

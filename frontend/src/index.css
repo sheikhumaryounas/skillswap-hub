@@ -369,6 +369,27 @@ nav {
   pointer-events: none;
 }
 
+/* Icon Styles */
+.inline-icon {
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: middle;
+  margin-right: 8px;
+  object-fit: contain;
+}
+
+.feature-icon-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.stat-icon-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 /* Global Modal Styles */
 .modal-overlay {
   position: fixed;

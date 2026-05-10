@@ -8,9 +8,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMySessions, completeSession, cancelSession, createSession } from '../services/sessionService';
 import { getMyRequests } from '../services/requestService';
+import { createReview } from '../services/reviewService';
 import { useAuth } from '../context/AuthContext';
 import SessionCard from '../components/cards/SessionCard';
 import PageBackground from '../components/common/PageBackground';
+import Modal from '../components/common/Modal';
 import '../assets/Sessions.css';
 
 const Sessions = () => {
@@ -31,6 +33,21 @@ const Sessions = () => {
     time: '',
     duration: 60,
     location: 'Google Meet / Zoom'
+  });
+  
+  // Review Modal State
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedSessionForReview, setSelectedSessionForReview] = useState(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewError, setReviewError] = useState('');
+
+  // Alert Modal State
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'success' // 'success' or 'error'
   });
 
   useEffect(() => {
@@ -67,8 +84,19 @@ const Sessions = () => {
     try {
       await completeSession(sessionId);
       await fetchSessions();
+      setAlertModal({
+        isOpen: true,
+        title: 'Session Completed',
+        message: 'Great job! The session has been marked as completed.',
+        type: 'success'
+      });
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to complete session');
+      setAlertModal({
+        isOpen: true,
+        title: 'Action Failed',
+        message: err.response?.data?.message || 'Failed to complete session',
+        type: 'error'
+      });
     } finally {
       setActionLoading(null);
     }
@@ -80,8 +108,19 @@ const Sessions = () => {
     try {
       await cancelSession(sessionId);
       await fetchSessions();
+      setAlertModal({
+        isOpen: true,
+        title: 'Session Cancelled',
+        message: 'The session has been successfully cancelled.',
+        type: 'success'
+      });
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to cancel session');
+      setAlertModal({
+        isOpen: true,
+        title: 'Action Failed',
+        message: err.response?.data?.message || 'Failed to cancel session',
+        type: 'error'
+      });
     } finally {
       setActionLoading(null);
     }
@@ -101,8 +140,58 @@ const Sessions = () => {
       setIsModalOpen(false);
       setNewSession({ requestId: '', date: '', time: '', duration: 60, location: 'Google Meet / Zoom' });
       await fetchSessions();
+      setAlertModal({
+        isOpen: true,
+        title: 'Session Scheduled',
+        message: 'Your knowledge swap has been successfully scheduled!',
+        type: 'success'
+      });
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to schedule session');
+      setAlertModal({
+        isOpen: true,
+        title: 'Scheduling Failed',
+        message: err.response?.data?.message || 'Failed to schedule session',
+        type: 'error'
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleLeaveReviewClick = (session) => {
+    setSelectedSessionForReview(session);
+    setReviewRating(5);
+    setReviewComment('');
+    setReviewError('');
+    setIsReviewModalOpen(true);
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setReviewError('');
+    setActionLoading('reviewing');
+
+    try {
+      const isTeacher = selectedSessionForReview.teacher._id === user._id;
+      const targetUserId = isTeacher ? selectedSessionForReview.learner._id : selectedSessionForReview.teacher._id;
+
+      await createReview({
+        sessionId: selectedSessionForReview._id,
+        revieweeId: targetUserId,
+        rating: reviewRating,
+        comment: reviewComment
+      });
+
+      setIsReviewModalOpen(false);
+      setAlertModal({
+        isOpen: true,
+        title: 'Review Submitted',
+        message: 'Thank you! Your feedback helps keep the community great.',
+        type: 'success'
+      });
+      await fetchSessions();
+    } catch (err) {
+      setReviewError(err.response?.data?.message || 'Failed to submit review');
     } finally {
       setActionLoading(null);
     }
@@ -172,6 +261,7 @@ const Sessions = () => {
                 currentUserId={user._id}
                 onComplete={handleCompleteSession}
                 onCancel={handleCancelSession}
+                onLeaveReview={handleLeaveReviewClick}
                 actionLoading={actionLoading === session._id}
               />
             ))}
@@ -182,6 +272,7 @@ const Sessions = () => {
       {/* Scheduling Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
+          {/* ... existing scheduling modal ... */}
           <div className="card modal-content glass">
             <h2>Schedule Knowledge Swap</h2>
             <form onSubmit={handleCreateSessionSubmit}>
@@ -247,6 +338,72 @@ const Sessions = () => {
           </div>
         </div>
       )}
+
+      {/* Review Modal */}
+      <Modal
+        isOpen={isReviewModalOpen}
+        onClose={() => actionLoading !== 'reviewing' && setIsReviewModalOpen(false)}
+        title={`Review your session with ${selectedSessionForReview?.teacher._id === user._id ? selectedSessionForReview?.learner.name : selectedSessionForReview?.teacher.name}`}
+        actions={
+          <>
+            <button className="btn btn-outline" onClick={() => setIsReviewModalOpen(false)} disabled={actionLoading === 'reviewing'}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleReviewSubmit} disabled={actionLoading === 'reviewing'}>
+              {actionLoading === 'reviewing' ? 'Submitting...' : 'Submit Review'}
+            </button>
+          </>
+        }
+      >
+        <div className="review-form">
+          <p>How was your experience learning/teaching <strong>{selectedSessionForReview?.skill}</strong>?</p>
+          
+          <div className="input-group">
+            <label>Rating (1-5 stars)</label>
+            <div className="rating-selector">
+              {[1, 2, 3, 4, 5].map(star => (
+                <button 
+                  key={star} 
+                  type="button"
+                  className={`star-btn ${reviewRating >= star ? 'active' : ''}`}
+                  onClick={() => setReviewRating(star)}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label>Comments</label>
+            <textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              placeholder="Share your thoughts on the session..."
+              rows="4"
+              required
+            ></textarea>
+          </div>
+          {reviewError && <div className="error-message">{reviewError}</div>}
+        </div>
+      </Modal>
+
+      {/* Alert Modal */}
+      <Modal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+        title={alertModal.title}
+        actions={
+          <button className="btn btn-primary" onClick={() => setAlertModal({ ...alertModal, isOpen: false })}>
+            Got it
+          </button>
+        }
+      >
+        <div className={`alert-content ${alertModal.type}`}>
+          <div className="alert-icon">
+            {alertModal.type === 'success' ? '✅' : '❌'}
+          </div>
+          <p>{alertModal.message}</p>
+        </div>
+      </Modal>
     </div>
   );
 };
